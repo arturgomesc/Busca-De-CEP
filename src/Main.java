@@ -1,3 +1,9 @@
+import Dados.GeradorDeArquivo;
+import Dados.Informacoes;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -7,6 +13,9 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner= new Scanner(System.in);
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
         String busca = "";
 
         while (!busca.equalsIgnoreCase("sair")){
@@ -17,8 +26,7 @@ public class Main {
                 break;
             }
 
-            String endereco = " viacep.com.br/ws/" + busca + "/json/";
-            System.out.println(endereco);
+            String endereco = "https://viacep.com.br/ws/" + busca.replace("-", "") + "/json/";
 
             try {
                 HttpClient client = HttpClient.newHttpClient();
@@ -30,7 +38,15 @@ public class Main {
 
                 String json = response.body();
                 System.out.println(json);
+
+                Informacoes informacoes = gson.fromJson(json, Informacoes.class);
+                System.out.println(informacoes);
+                GeradorDeArquivo gerador = new GeradorDeArquivo();
+                gerador.salvaJson(informacoes);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Algum erro de argumento na busca, verifique o endereço");
             }
+
         }
     }
 }
