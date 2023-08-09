@@ -1,8 +1,8 @@
 import Dados.GeradorDeArquivo;
 import Dados.Informacoes;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,10 +43,13 @@ public class Main {
                 System.out.println(informacoes);
                 GeradorDeArquivo gerador = new GeradorDeArquivo();
                 gerador.salvaJson(informacoes);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Algum erro de argumento na busca, verifique o endereço");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }catch (NullPointerException e) {
+                System.out.println("Não foi possível encontrar o CEP informado. Por favor, digite um válido.");
+            } catch (JsonSyntaxException e) {
+                System.out.println("O CEP redigido está incorreto. Por favor, adicione apenas números e exatamente 8 dígitos.");
             }
-
         }
     }
 }
